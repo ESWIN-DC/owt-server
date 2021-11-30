@@ -236,14 +236,14 @@ install_libexpat() {
   fi
 }
 
-install_webrtc79(){
-  $INCR_INSTALL &&  [[ -s $ROOT/third_party/webrtc-m79/libwebrtc.a ]] && \
+install_webrtc_jetson(){
+  $INCR_INSTALL &&  [[ -s $ROOT/third_party/webrtc_jetson/libwebrtc.a ]] && \
   echo "libwebrtc already installed." && return 0
 
-  [[ ! -d $ROOT/third_party/webrtc-m79 ]] && \
-    mkdir $ROOT/third_party/webrtc-m79
+  [[ ! -d $ROOT/third_party/webrtc_jetson ]] && \
+    mkdir $ROOT/third_party/webrtc_jetson
 
-  pushd ${ROOT}/third_party/webrtc-m79 >/dev/null
+  pushd ${ROOT}/third_party/webrtc_jetson >/dev/null
   . $PATHNAME/installWebrtc.sh
   popd
 }
@@ -271,12 +271,10 @@ install_webrtc(){
   fi
 
   pushd ${ROOT}/third_party/webrtc
-  git clone -b 59-server https://github.com/open-webrtc-toolkit/owt-deps-webrtc.git src
-  ./src/tools-woogeen/install.sh
-  ./src/tools-woogeen/build.sh
+  git clone -b r32.5.1 https://github.com/ESWIN-DC/webrtc-jetson.git src
   popd
 
-  install_webrtc79
+  install_webrtc_jetson
 
   if [[ "$OS" =~ .*ubuntu.* ]] && [[ "$OS_VERSION" =~ 20.04.* ]]; then
     ${SUDO} update-alternatives --remove python /usr/bin/python2
@@ -307,6 +305,8 @@ install_licode(){
 }
 
 install_quic(){
+  $INCR_INSTALL && [[ -d ${ROOT}/third_party/quic-lib ]] && echo "quic-lib already installed." && return 0
+
   # QUIC IO
   rm $ROOT/third_party/quic-lib -rf
   mkdir $ROOT/third_party/quic-lib
@@ -341,6 +341,8 @@ install_quic(){
 }
 
 install_nicer(){
+  $INCR_INSTALL && [[ -d ${ROOT}/third_party/nICEr ]] && echo "nICEr already installed." && return 0
+
   local COMMIT="24d88e95e18d7948f5892d04589acce3cc9a5880"
   pushd ${ROOT}/third_party >/dev/null
   rm -rf nICEr

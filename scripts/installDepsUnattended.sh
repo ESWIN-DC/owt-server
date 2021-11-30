@@ -106,7 +106,8 @@ if [ "$NIGHTLY" != "true" ]; then
 
   install_licode
 
-  install_svt_hevc
+  # install_svt_hevc
+  # removed
 
   install_json_hpp
 
