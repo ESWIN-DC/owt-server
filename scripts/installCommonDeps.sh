@@ -244,7 +244,7 @@ install_webrtc_jetson(){
     mkdir $ROOT/third_party/webrtc_jetson
 
   pushd ${ROOT}/third_party/webrtc_jetson >/dev/null
-  . $PATHNAME/installWebrtc.sh
+  cp ${ROOT}/third_party/webrtc/src/libwebrtc.a .
   popd
 }
 
@@ -252,33 +252,15 @@ install_webrtc(){
   $INCR_INSTALL &&  [[ -s $ROOT/third_party/webrtc/libwebrtc.a ]] && \
   echo "libwebrtc already installed." && return 0
 
-  export GIT_SSL_NO_VERIFY=1
-  local GIT_ACCOUNT="lab_webrtctest"
-  local OWT_GIT_URL=`git config --get remote.origin.url`
-  if [ ! -z "$OWT_GIT_URL" ]; then
-    if echo $OWT_GIT_URL | grep "@" -q -s; then
-      GIT_ACCOUNT=`echo $OWT_GIT_URL | awk -F '\/\/' '{print $2}' | awk -F '@' '{print $1}'`
-    else
-      GIT_ACCOUNT=`whoami`
-    fi
-  fi
-
   rm $ROOT/third_party/webrtc -rf
   mkdir $ROOT/third_party/webrtc
   
-  if [[ "$OS" =~ .*ubuntu.* ]] && [[ "$OS_VERSION" =~ 20.04.* ]]; then
-    ${SUDO} update-alternatives --install /usr/bin/python python /usr/bin/python2 1
-  fi
-
   pushd ${ROOT}/third_party/webrtc
   git clone -b r32.5.1 https://github.com/ESWIN-DC/webrtc-jetson.git src
+  cp ${ROOT}/third_party/webrtc/src/libwebrtc.a .
   popd
 
   install_webrtc_jetson
-
-  if [[ "$OS" =~ .*ubuntu.* ]] && [[ "$OS_VERSION" =~ 20.04.* ]]; then
-    ${SUDO} update-alternatives --remove python /usr/bin/python2
-  fi
 }
 
 install_licode(){
@@ -498,6 +480,8 @@ install_gcc(){
 }
 
 install_json_hpp() {
+  $INCR_INSTALL && [[ ! -z ${PREFIX_DIR}/include/json.hpp ]] && echo "json_hpp already installed." && return 0
+
   if [ -d $LIB_DIR ]; then
     local DOWNLOAD_JSON_LINK="https://github.com/nlohmann/json/releases/download/v3.6.1/json.hpp"
     pushd $LIB_DIR >/dev/null
